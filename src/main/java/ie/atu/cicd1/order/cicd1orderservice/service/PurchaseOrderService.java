@@ -3,7 +3,9 @@ import ie.atu.cicd1.order.cicd1orderservice.model.PurchaseOrder;
 import ie.atu.cicd1.order.cicd1orderservice.repository.PurchaseOrderRepository;
 import ie.atu.cicd1.order.client.CatalogClient;
 import ie.atu.cicd1.order.client.dto.ProductResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -23,6 +25,14 @@ public class PurchaseOrderService {
     }
     public ProductResponse testCatalogConnection(Long productId) {
         return catalogClient.getProductById(productId);
+    }
+    public ProductResponse getProductForOrder(Long orderId) {
+        PurchaseOrder order = repository.findById(orderId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Order not found"
+                ));
+        return catalogClient.getProductById(order.getProductId());
     }
 }
 
